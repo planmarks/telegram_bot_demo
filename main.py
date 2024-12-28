@@ -9,6 +9,7 @@ from telegram.ext import (
 )
 import asyncio
 
+# Bot token
 TOKEN: Final = '7979270240:AAEzwvheVoyjqA71f9ErbYOAYCWfLWWHyt0'
 BOT_USERNAME = '@planmarks_watchdog_bot'
 

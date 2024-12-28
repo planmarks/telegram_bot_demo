@@ -10,4 +10,7 @@ venv\Scripts\activate
 6. Create main.py
 7. Add desired functions
 8. pip freeze > requirements.txt
-9. 
+9. git add requirements.txt  # Add only the updated requirements file
+git add .  # This will add all modified and new files
+git commit -m "Updated requirements.txt to remove incompatible packages"
+git push origin main
