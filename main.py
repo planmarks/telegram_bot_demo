@@ -1,67 +1,115 @@
 from typing import Final
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram import Update, ChatPermissions
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    filters,
+    ContextTypes,
+)
+import asyncio
 
 TOKEN: Final = '7979270240:AAEzwvheVoyjqA71f9ErbYOAYCWfLWWHyt0'
 BOT_USERNAME = '@planmarks_watchdog_bot'
 
-# Commands
-async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text('Hello there!')
+# List of offensive words
+OFFENSIVE_WORDS = ["neeger", "nigga", "nigger"]
 
+# Dictionary to track user warnings
+warnings = {}
+
+# Welcome message function
+async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    for member in update.message.new_chat_members:
+        await update.message.reply_text(f"Welcome, {member.full_name}! 🎉 Please follow the group rules.")
+
+# Anti-Spam Management: Filter offensive words
+async def filter_offensive(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    text = update.message.text.lower()
+    chat_id = update.effective_chat.id
+
+    if any(word in text for word in OFFENSIVE_WORDS):
+        # Issue a warning or mute
+        warnings[user_id] = warnings.get(user_id, 0) + 1
+        if warnings[user_id] == 1:
+            await update.message.reply_text(
+                f"⚠️ Warning! Offensive language is not allowed. ({warnings[user_id]}/3)"
+            )
+        elif warnings[user_id] >= 3:
+            warnings[user_id] = 0
+            await context.bot.restrict_chat_member(
+                chat_id,
+                user_id,
+                ChatPermissions(can_send_messages=False),
+                until_date=asyncio.time() + 3600,
+            )
+            await update.message.reply_text(
+                f"🚫 {update.effective_user.full_name} has been muted for 1 hour."
+            )
+
+# Command to show group rules
+async def rules_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("📜 Group Rules:\n1. Be respectful\n2. No offensive language\n3. Follow all Telegram guidelines")
+
+# Command to show help
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text('How may I help you?')
+    await update.message.reply_text("ℹ️ Available Commands:\n/rules - Show group rules\n/help - Show available commands")
 
-async def contact_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text('Please message aleks@planmarks.eu')
+# Command to warn a user
+async def warn_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message.reply_to_message:
+        await update.message.reply_text("Reply to a message to warn a user.")
+        return
 
-# Response handler
-def handle_response(text: str) -> str:
-    processed: str = text.lower()
-    if 'hello' in processed:
-        return 'Hello there!'
-    if 'how are you' in processed:
-        return 'Good, thank you!'
-    return 'I do not understand what you are trying to say...'
+    user_id = update.message.reply_to_message.from_user.id
+    warnings[user_id] = warnings.get(user_id, 0) + 1
+    await update.message.reply_text(f"⚠️ User has been warned! ({warnings[user_id]}/3)")
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message_type = update.message.chat.type
-    text: str = update.message.text
+# Command to mute a user
+async def mute_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message.reply_to_message:
+        await update.message.reply_text("Reply to a message to mute a user.")
+        return
 
-    # Debug messages
-    print(f'User ({update.message.chat.id}) in {message_type}: "{text}"')
+    user_id = update.message.reply_to_message.from_user.id
+    chat_id = update.effective_chat.id
 
-    if message_type == 'group':
-        if BOT_USERNAME in text:
-            new_text: str = text.replace(BOT_USERNAME, '').strip()
-            response: str = handle_response(new_text)
-        else:
-            return
-    else:
-        response: str = handle_response(text)
+    await context.bot.restrict_chat_member(
+        chat_id,
+        user_id,
+        ChatPermissions(can_send_messages=False),
+        until_date=asyncio.time() + 3600,
+    )
+    await update.message.reply_text("🚫 User has been muted for 1 hour.")
 
-    print('Bot:', response)
-    await update.message.reply_text(response)
+# Mention management
+async def mention_management(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if context.bot.username in update.message.text:
+        await update.message.reply_text("👋 How can I assist you?")
 
+# Error handler
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Log the error
     print(f"Update {update} caused error {context.error}")
 
-if __name__ == '__main__':
-    print('Starting bot...')
+# Main function
+def main():
     app = Application.builder().token(TOKEN).build()
 
-    # Commands
-    app.add_handler(CommandHandler('start', start_command))
-    app.add_handler(CommandHandler('help', help_command))
-    app.add_handler(CommandHandler('contact', contact_command))
+    # Handlers
+    app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, welcome))
+    app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), filter_offensive))
+    app.add_handler(CommandHandler("rules", rules_command))
+    app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("warn", warn_command))
+    app.add_handler(CommandHandler("mute", mute_command))
+    app.add_handler(MessageHandler(filters.TEXT & filters.Regex("@"), mention_management))
 
-    # Messages
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-
-    # Errors
     app.add_error_handler(error)
 
-    # Check for messages every 3 seconds
-    print('Polling...')
-    app.run_polling(poll_interval=3)
+    # Run the bot
+    print("Bot is running...")
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()
