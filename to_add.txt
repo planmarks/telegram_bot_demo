@@ -1,0 +1,34 @@
+1. Create a Business Telegram Chatbot
+    Client clicks AI consultant button
+    
+    
+Telegram bot opens
+Bot begins with 'Hello! How can I help you today?'
+
+    Keyboard buttons 'I want to get a quote' and 'Tell me about your services'
+        if 'I know what i want'
+            ask for Name, Email, Telephone nr
+            ask to describe what they want in one message
+            ask 'Is there anything else?'
+            Keyboard buttons 'Yes' and 'No'
+                if 'Yes'
+                    ask for details in one message
+                    return 'Thank you! We will contact you shortly!'
+                    submit data to group id
+                if 'No'
+                    submit data to group id
+
+        if 'Tell me more'
+            return 'Here is how we can make your life easier...'
+            Keyboard buttons 'Marketing', 'Branding & Design', 'Web Design', 'Consulting', 'Market Research'
+                if 'Marketing'
+                    return 'Marketing is'
+                if 'Branding & Design'
+                    return ''
+                if 'Web Design'
+                    return ''
+                if 'Consulting'
+                    return ''
+                if 'Market Research'
+                    return '' 
+

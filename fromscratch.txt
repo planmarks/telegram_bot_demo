@@ -1,16 +1,11 @@
-1. Access Bot Father on Telegram
-2. Create new bot
-3. Copy bot API
-4. Set bot username
-5. Create a folder for the bot script
 Create a virtual env
 python -m venv venv
 Activate virtual env
 venv\Scripts\activate
-6. Create main.py
-7. Add desired functions
-8. pip freeze > requirements.txt
-9. git add requirements.txt  # Add only the updated requirements file
-git add .  # This will add all modified and new files
+Create main.py
+Add desired functions
+pip freeze > requirements.txt
+git add requirements.txt            # Add only the updated requirements file
+git add .                           # This will add all modified and new files
 git commit -m "Updated requirements.txt to remove incompatible packages"
 git push origin main

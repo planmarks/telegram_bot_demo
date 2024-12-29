@@ -1,0 +1,49 @@
+What can you do?
+
+How do I start using you?
+
+Can you tell me a joke?
+
+What are your commands?
+
+Can you tell me about yourself?
+
+Can you help me with [task_name]?
+
+What is your name?
+
+What’s your purpose?
+
+Are you a robot?
+
+Are you a human?
+
+Are you a real person?
+
+How do I get help?
+
+Can you play games?
+
+Can you send me a news update?
+
+How do I unsubscribe?
+
+How do I report an issue?
+
+Do you have any cool facts to share?
+
+Are there any privacy concerns I should know about?
+
+How do I update my information?
+
+How do I stop receiving messages?
+
+What are your operating hours?
+
+How do I customize my experience?
+
+What is the best way to contact you?
+
+How do I find out about new features?
+
+How do I connect with other bots?

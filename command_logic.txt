@@ -1,0 +1,6 @@
+Commands
+
+/start - Start the conversation
+/help - Get a list of Commands
+/info - Purpose of the bot
+/rules - List rules of the chat (should direct to a message via link)
