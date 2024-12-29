@@ -12,31 +12,31 @@ BOT_USERNAME = '@planmarks_watchdog_bot'
 user_warnings = defaultdict(int)
 user_last_messages = defaultdict(list)
 user_last_time = defaultdict(float)
-FORBIDDEN_WORDS = ['neeger', 'nigger', 'nigga', 'hälvar', 'retard', 'russ']
+FORBIDDEN_WORDS = ['neeger', 'nigger', 'nigga', 'hälvar', 'retard', 'russ', 'hälvik', 'pede', 'pederast', 'vitupea', 'jobi', 'tibla', 'dibla']
 
 # Commands
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text('Hello there! How may I help you?')
+    await update.message.reply_text('Tere, kuidas saan sulle abiks olla?')
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text('Here is a list of helpful commands.')
+    await update.message.reply_text('Kui sa vajad abi, siis palun kirjuta @papasticktea')
 
 async def contact_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text('Please message aleks@planmarks.eu.')
+    await update.message.reply_text('Selleks, et kontakteeruda omanikuga, palun kirjuta aleks@planmarks.eu või @papasticktea')
 
 # Welcome new members
 async def welcome_new_member(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for member in update.message.new_chat_members:
-        await update.message.reply_text(f"Welcome, {member.full_name}! Glad to have you here!")
+        await update.message.reply_text(f"Tervist, {member.full_name}! Hea meel, et oled meiega liitunud!")
 
 # Handle responses
 def handle_response(text: str) -> str:
     processed = text.lower()
-    if 'hello' in processed:
-        return 'Hello there!'
-    if 'how are you' in processed:
-        return 'Good, thank you!'
-    return 'I do not understand what you are trying to say...'
+    if 'tere' in processed:
+        return 'Tere!'
+    if 'kuidas läheb' in processed:
+        return 'Hästi! Tänan küsimast!'
+    return 'Vabandust, aga see, mida sa räägid ei kattu minu oskuste või teadmistega... Palun pöördu minu looja juurde @papasticktea'
 
 # Spam detection
 def is_spam(text: str, user_id: int) -> bool:
@@ -85,17 +85,17 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await context.bot.send_message(
                     chat_id=chat_id,
                     text=(
-                        f"@{username}, your message was removed for using forbidden words. "
-                        "You have been muted for 1 hour due to repeated offenses."
+                        f"@{username}, sinu sõnum on kustutatud keelatud sõna kasutamise tõttu. "
+                        "Keelatud sõnade kasutamise tõttu ei saa sa 1h vestlusest osa võtta."
                     )
                 )
             else:
                 await context.bot.send_message(
                     chat_id=chat_id,
                     text=(
-                        f"@{username}, your message was removed for using forbidden words. "
-                        f"This is your {user_warnings[user_id]} warning. "
-                        "Three warnings will result in a 1-hour mute."
+                        f"@{username}, sinu sõnum on kustutatud keelatud sõna kasutamise tõttu. "
+                        f"See on sinu {user_warnings[user_id]}. hoiatus. "
+                        "Peale kolmandat hoiatust, ei saa sa 1h vestlusest osa võtta."
                     )
                 )
         elif message_type == 'private':
@@ -103,15 +103,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if user_warnings[user_id] >= 3:
                 await context.bot.send_message(
                     chat_id=user_id,
-                    text="You have been muted for 1 hour due to repeated offenses for using forbidden words."
+                    text="Keelatud sõnade kasutamise tõttu ei saa sa tund aega vestlusest osa võtta."
                 )
             else:
                 await context.bot.send_message(
                     chat_id=user_id,
                     text=(
-                        f"Your message was removed for using forbidden words. "
-                        f"This is your {user_warnings[user_id]} warning. "
-                        "Three warnings will result in a 1-hour mute."
+                        f"Sinu sõnum on kustutatud keelatud sõna kasutamise tõttu. "
+                        f"See on sinu {user_warnings[user_id]}. hoiatus. "
+                        "Peale kolmandat hoiatust, ei saa sa 1h vestlusest osa võtta."
                     )
                 )
         return
@@ -127,9 +127,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     user_id=user_id,
                     until_date=int(time.time()) + 3600
                 )
-                await context.bot.send_message(chat_id=chat_id, text="You have been muted for spamming.")
+                await context.bot.send_message(chat_id=chat_id, text="Sind on spammi tõttu vaigistatud.")
             else:
-                await context.bot.send_message(chat_id=chat_id, text=f"Warning! This is your {user_warnings[user_id]} warning for spam.")
+                await context.bot.send_message(chat_id=chat_id, text=f"Hoiatus! See on sinu {user_warnings[user_id]}. spämmi hoiatus.")
             return
 
         # Generate and send response
