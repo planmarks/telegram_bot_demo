@@ -1,9 +1,13 @@
-1. Register on Render
-2. Create a Virtual Service
-3. Connect to GitHub repository
-4. Define start script
-5. Deploy
-6. username
+# How to run the Telegram Moderator Bot
+# Can be deployed out of the box on Render
+# To deploy locally (via RPI) create a different virtual environment and install requirements
+# Modify unwanted words
+# Modify response language
 
-To update functions, update the files in GitHub repository.
-7979270240:AAEzwvheVoyjqA71f9ErbYOAYCWfLWWHyt0
+1. Create a Telegram Bot
+2. Copy Token
+3. Register on Render
+4. Create a Background Service
+5. Connect to GitHub repository
+6. Define start script
+7. Deploy
